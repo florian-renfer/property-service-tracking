@@ -107,6 +107,17 @@ Frontend
 * Mobile-first
 * PWA-ready
 
+Backend structure currently provides foundation only:
+
+* `internal/app/ports` - application ports (interfaces) for adapters
+* `internal/api` - HTTP router composition and versioned route wiring
+* `internal/platform` - infrastructure adapters (health handler, server adapter)
+
+Current API surface:
+
+* `GET /health`
+* `GET /api/v1/health`
+
 ⸻
 
 🔐 Security
@@ -188,3 +199,27 @@ And a service worker can:
 And the property manager can:
 
 1. Review the completed service history
+
+⸻
+
+🛠️ Developer Setup
+
+1. Create local env:
+   * `cp .env.example .env`
+2. Install tooling:
+   * `make tools`
+3. Start dependencies:
+   * `docker compose up -d`
+4. Start API:
+   * `make run`
+
+⸻
+
+✅ Quality Gates
+
+* Format: `make fmt` / check only: `make fmt-check`
+* Lint: `make lint` (revive)
+* Tests: `make test`
+* Static checks: `make vet`
+
+CI runs these checks on pushes to `main` and pull requests.
