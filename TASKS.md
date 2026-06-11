@@ -2,15 +2,15 @@
 
 ## 1. Project foundation
 
-- [ ] Initialize Go module
-- [ ] Add basic backend folder structure
-- [ ] Add `.gitignore`
-- [ ] Add `.env.example`
-- [ ] Add `Makefile`
-- [ ] Add Docker Compose with PostgreSQL
-- [ ] Add health endpoint
-- [ ] Add basic HTTP server startup
-- [ ] Add graceful shutdown
+- [x] Initialize Go module
+- [x] Add basic backend folder structure
+- [x] Add `.gitignore`
+- [x] Add `.env.example`
+- [x] Add `Makefile`
+- [x] Add Docker Compose with PostgreSQL
+- [x] Add health endpoint
+- [x] Add basic HTTP server startup
+- [x] Add graceful shutdown
 
 ## 2. Database foundation
 
