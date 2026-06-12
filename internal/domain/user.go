@@ -1,4 +1,4 @@
-// Package router defines domain specific entities.
+// Package domain defines core business entities and contracts.
 package domain
 
 import (
@@ -12,27 +12,43 @@ import (
 )
 
 var (
-	ErrUserPasswordHashBlank   = errors.New("user password hash cannot be blank")
+	// ErrUserPasswordHashBlank indicates the password hash is empty after trimming.
+	ErrUserPasswordHashBlank = errors.New("user password hash cannot be blank")
+	// ErrUserPasswordHashTooLong indicates the password hash exceeds max length.
 	ErrUserPasswordHashTooLong = errors.New("user password hash exceeds 64 characters")
-	ErrUserGivenNameBlank      = errors.New("user given name cannot be blank")
-	ErrUserFamilyNameBlank     = errors.New("user family name cannot be blank")
-	ErrUserEmailBlank          = errors.New("user email cannot be blank")
-	ErrUserEmailInvalid        = errors.New("user email format is invalid")
-	ErrUserEmailNotLower       = errors.New("user email must be lowercase")
-	ErrUserEmailTooLong        = errors.New("user email exceeds 255 characters")
-	ErrUserGivenNameTooLong    = errors.New("user given name exceeds 255 characters")
-	ErrUserFamilyNameTooLong   = errors.New("user family name exceeds 255 characters")
-	ErrUserRoleIDNil           = errors.New("user role id cannot be nil")
+	// ErrUserGivenNameBlank indicates the given name is empty after trimming.
+	ErrUserGivenNameBlank = errors.New("user given name cannot be blank")
+	// ErrUserFamilyNameBlank indicates the family name is empty after trimming.
+	ErrUserFamilyNameBlank = errors.New("user family name cannot be blank")
+	// ErrUserEmailBlank indicates the email is empty after trimming.
+	ErrUserEmailBlank = errors.New("user email cannot be blank")
+	// ErrUserEmailInvalid indicates the email does not satisfy format validation.
+	ErrUserEmailInvalid = errors.New("user email format is invalid")
+	// ErrUserEmailNotLower indicates the email is not normalized to lowercase.
+	ErrUserEmailNotLower = errors.New("user email must be lowercase")
+	// ErrUserEmailTooLong indicates the email exceeds max length.
+	ErrUserEmailTooLong = errors.New("user email exceeds 255 characters")
+	// ErrUserGivenNameTooLong indicates the given name exceeds max length.
+	ErrUserGivenNameTooLong = errors.New("user given name exceeds 255 characters")
+	// ErrUserFamilyNameTooLong indicates the family name exceeds max length.
+	ErrUserFamilyNameTooLong = errors.New("user family name exceeds 255 characters")
+	// ErrUserRoleIDNil indicates role ID is missing.
+	ErrUserRoleIDNil = errors.New("user role id cannot be nil")
 )
 
 const (
+	// UserPasswordHashMaxLen is max allowed length for password hash.
 	UserPasswordHashMaxLen = 64
-	UserEmailMaxLen        = 255
-	UserGivenNameMaxLen    = 255
-	UserFamilyNameMaxLen   = 255
+	// UserEmailMaxLen is max allowed length for email.
+	UserEmailMaxLen = 255
+	// UserGivenNameMaxLen is max allowed length for given name.
+	UserGivenNameMaxLen = 255
+	// UserFamilyNameMaxLen is max allowed length for family name.
+	UserFamilyNameMaxLen = 255
 )
 
 type (
+	// User represents a system user account.
 	User struct {
 		id           uuid.UUID
 		email        string
@@ -45,6 +61,7 @@ type (
 		lastLoginAt  time.Time
 	}
 
+	// UserRepository defines persistence operations for users.
 	UserRepository interface {
 		Create(ctx context.Context, user User) error
 		FindAll(ctx context.Context) ([]User, error)

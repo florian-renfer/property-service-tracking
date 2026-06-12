@@ -1,4 +1,4 @@
-// Package router defines domain specific entities.
+// Package domain defines core business entities and contracts.
 package domain
 
 import (
@@ -11,18 +11,25 @@ import (
 )
 
 var (
-	ErrRoleLabelBlank         = errors.New("role label cannot be blank")
-	ErrRoleLabelNotUpper      = errors.New("role label must be uppercase")
-	ErrRoleLabelTooLong       = errors.New("role label exceeds 100 characters")
+	// ErrRoleLabelBlank indicates the role label is empty after trimming.
+	ErrRoleLabelBlank = errors.New("role label cannot be blank")
+	// ErrRoleLabelNotUpper indicates the role label is not uppercase.
+	ErrRoleLabelNotUpper = errors.New("role label must be uppercase")
+	// ErrRoleLabelTooLong indicates the role label exceeds max length.
+	ErrRoleLabelTooLong = errors.New("role label exceeds 100 characters")
+	// ErrRoleDescriptionTooLong indicates the role description exceeds max length.
 	ErrRoleDescriptionTooLong = errors.New("role description exceeds 255 characters")
 )
 
 const (
-	RoleLabelMaxLen       = 100
+	// RoleLabelMaxLen is max allowed length for role label.
+	RoleLabelMaxLen = 100
+	// RoleDescriptionMaxLen is max allowed length for role description.
 	RoleDescriptionMaxLen = 255
 )
 
 type (
+	// Role represents an authorization role in the system.
 	Role struct {
 		id          uuid.UUID
 		label       string
@@ -31,6 +38,7 @@ type (
 		updatedAt   time.Time
 	}
 
+	// RoleRepository defines persistence operations for roles.
 	RoleRepository interface {
 		Create(ctx context.Context, role Role) error
 		FindAll(ctx context.Context) ([]Role, error)
