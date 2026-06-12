@@ -12,17 +12,17 @@ import (
 )
 
 var (
-	ErrUserPasswordHashBlank  = errors.New("user password hash cannot be blank")
+	ErrUserPasswordHashBlank   = errors.New("user password hash cannot be blank")
 	ErrUserPasswordHashTooLong = errors.New("user password hash exceeds 64 characters")
-	ErrUserGivenNameBlank     = errors.New("user given name cannot be blank")
-	ErrUserFamilyNameBlank    = errors.New("user family name cannot be blank")
-	ErrUserEmailBlank         = errors.New("user email cannot be blank")
-	ErrUserEmailInvalid       = errors.New("user email format is invalid")
-	ErrUserEmailNotLower      = errors.New("user email must be lowercase")
-	ErrUserEmailTooLong       = errors.New("user email exceeds 255 characters")
-	ErrUserGivenNameTooLong   = errors.New("user given name exceeds 255 characters")
-	ErrUserFamilyNameTooLong  = errors.New("user family name exceeds 255 characters")
-	ErrUserRoleIDNil          = errors.New("user role id cannot be nil")
+	ErrUserGivenNameBlank      = errors.New("user given name cannot be blank")
+	ErrUserFamilyNameBlank     = errors.New("user family name cannot be blank")
+	ErrUserEmailBlank          = errors.New("user email cannot be blank")
+	ErrUserEmailInvalid        = errors.New("user email format is invalid")
+	ErrUserEmailNotLower       = errors.New("user email must be lowercase")
+	ErrUserEmailTooLong        = errors.New("user email exceeds 255 characters")
+	ErrUserGivenNameTooLong    = errors.New("user given name exceeds 255 characters")
+	ErrUserFamilyNameTooLong   = errors.New("user family name exceeds 255 characters")
+	ErrUserRoleIDNil           = errors.New("user role id cannot be nil")
 )
 
 const (

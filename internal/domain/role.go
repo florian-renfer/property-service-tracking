@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	ErrRoleLabelBlank       = errors.New("role label cannot be blank")
-	ErrRoleLabelNotUpper    = errors.New("role label must be uppercase")
-	ErrRoleLabelTooLong     = errors.New("role label exceeds 100 characters")
+	ErrRoleLabelBlank         = errors.New("role label cannot be blank")
+	ErrRoleLabelNotUpper      = errors.New("role label must be uppercase")
+	ErrRoleLabelTooLong       = errors.New("role label exceeds 100 characters")
 	ErrRoleDescriptionTooLong = errors.New("role description exceeds 255 characters")
 )
 
