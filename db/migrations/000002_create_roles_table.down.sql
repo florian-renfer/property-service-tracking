@@ -1,7 +1,0 @@
-BEGIN;
-
-ALTER TABLE users DROP COLUMN IF EXISTS role_id;
-DROP INDEX IF EXISTS users_role_id_idx;
-DROP TABLE IF EXISTS roles;
-
-COMMIT;

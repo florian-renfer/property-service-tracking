@@ -5,9 +5,10 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL CHECK (
         LENGTH(TRIM(email)) > 0 AND email = LOWER(email)
     ),
-    password_hash TEXT NOT NULL CHECK (LENGTH(TRIM(password_hash)) > 0),
+    password_hash VARCHAR(64) NOT NULL CHECK (LENGTH(TRIM(password_hash)) > 0),
     given_name VARCHAR(255) NOT NULL CHECK (LENGTH(TRIM(given_name)) > 0),
     family_name VARCHAR(255) NOT NULL CHECK (LENGTH(TRIM(family_name)) > 0),
+    role_id UUID NOT NULL REFERENCES roles (id) ON DELETE RESTRICT,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     last_login_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -16,5 +17,6 @@ CREATE TABLE users (
 );
 
 CREATE INDEX users_active_created_at_idx ON users (active, created_at);
+CREATE INDEX users_role_id_idx ON users (role_id);
 
 COMMIT;
