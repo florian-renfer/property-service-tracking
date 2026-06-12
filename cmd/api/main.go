@@ -15,12 +15,18 @@ import (
 	"github.com/florian-renfer/property-service-tracking/internal/api/router"
 	"github.com/florian-renfer/property-service-tracking/internal/interface/rest"
 
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
-	// Establish database connection
-	connect()
+	// Establish database connection and run migrations
+	dbpool := connect()
+	defer dbpool.Close()
 
 	// Router dependencies
 	healthHandler := rest.NewHandler()
@@ -52,7 +58,7 @@ func main() {
 	}
 }
 
-func connect() {
+func connect() *pgxpool.Pool {
 	databaseURL := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?pool_max_conns=10&pool_max_conn_lifetime=30m",
 		os.Getenv("POSTGRES_USER"),
@@ -67,14 +73,33 @@ func connect() {
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
 	}
-	defer dbpool.Close()
 
-	var greeting string
-	err = dbpool.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
+	// Wrap pgxpool with stdlib interface for migrate
+	db := stdlib.OpenDBFromPool(dbpool)
+	defer db.Close()
+
+	// Create postgres driver from pooled connection
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Migration driver setup failed: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(greeting)
+	// Run migrations using pooled connection
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://db/migrations",
+		"postgres",
+		driver,
+	)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Migration setup failed: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		fmt.Fprintf(os.Stderr, "Migration failed: %v\n", err)
+		os.Exit(1)
+	}
+
+	return dbpool
 }
