@@ -32,7 +32,8 @@ func main() {
 	healthHandler := rest.NewHandler()
 
 	// The HTTP Server
-	server := &http.Server{Addr: "0.0.0.0:8080", Handler: router.New(router.Dependencies{HealthHandler: healthHandler})}
+	port := getEnvOrDefault("API_PORT", "4000")
+	server := &http.Server{Addr: "0.0.0.0:" + port, Handler: router.New(router.Dependencies{HealthHandler: healthHandler})}
 
 	// Create context that listens for the interrupt signal
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -102,4 +103,11 @@ func connect() *pgxpool.Pool {
 	}
 
 	return dbpool
+}
+
+func getEnvOrDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }
