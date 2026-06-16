@@ -117,11 +117,14 @@ Current API surface:
 
 * `GET /health`
 * `GET /api/v1/health`
+* `GET /api/v1/me` — secured, bearer token required
 
 ⸻
 
 🔐 Security
 
+* Keycloak issuer + JWKS-backed bearer token validation
+* JWT signature, issuer, and audience checks at the HTTP boundary
 * Email/password authentication
 * Session cookies
 * Role-based access control

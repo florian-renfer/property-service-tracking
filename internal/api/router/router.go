@@ -13,7 +13,9 @@ import (
 
 // Dependencies contains dependencies for route wiring.
 type Dependencies struct {
-	HealthHandler v1.HealthEndpoint
+	HealthHandler  v1.HealthEndpoint
+	MeHandler      v1.MeEndpoint
+	AuthMiddleware v1.AuthMiddleware
 }
 
 // New builds the full HTTP router.
@@ -32,7 +34,9 @@ func New(deps Dependencies) http.Handler {
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	v1.RegisterRoutes(r, v1.Dependencies{
-		HealthHandler: deps.HealthHandler,
+		HealthHandler:  deps.HealthHandler,
+		MeHandler:      deps.MeHandler,
+		AuthMiddleware: deps.AuthMiddleware,
 	})
 
 	return r

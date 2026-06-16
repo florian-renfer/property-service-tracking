@@ -14,6 +14,7 @@ import (
 
 	"github.com/florian-renfer/property-service-tracking/internal/api/router"
 	"github.com/florian-renfer/property-service-tracking/internal/interface/rest"
+	restauth "github.com/florian-renfer/property-service-tracking/internal/interface/rest/auth"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -30,10 +31,32 @@ func main() {
 
 	// Router dependencies
 	healthHandler := rest.NewHandler()
+	meHandler := rest.NewMeHandler()
+
+	authCtx, cancelAuth := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancelAuth()
+
+	issuerURL := getEnvOrDefault(
+		"KEYCLOAK_ISSUER_URL",
+		fmt.Sprintf(
+			"http://%s:%s/realms/property-service-tracking",
+			getEnvOrDefault("KEYCLOAK_URL", "127.0.0.1"),
+			getEnvOrDefault("KEYCLOAK_PORT", "8090"),
+		),
+	)
+
+	authMiddleware, err := restauth.NewMiddleware(
+		authCtx,
+		issuerURL,
+		getEnvOrDefault("KEYCLOAK_AUDIENCE", "property-service-api"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// The HTTP Server
 	port := getEnvOrDefault("API_PORT", "4000")
-	server := &http.Server{Addr: "0.0.0.0:" + port, Handler: router.New(router.Dependencies{HealthHandler: healthHandler})}
+	server := &http.Server{Addr: "0.0.0.0:" + port, Handler: router.New(router.Dependencies{HealthHandler: healthHandler, MeHandler: meHandler, AuthMiddleware: authMiddleware})}
 
 	// Create context that listens for the interrupt signal
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
