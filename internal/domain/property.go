@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"context"
 	"errors"
 	"strings"
 	"time"
@@ -42,14 +41,6 @@ type (
 		createdAt time.Time
 		updatedBy uuid.UUID
 		updatedAt time.Time
-	}
-
-	// PropertyRepository defines persistence operations for properties.
-	PropertyRepository interface {
-		Create(ctx context.Context, property Property) error
-		FindAll(ctx context.Context) ([]Property, error)
-		Find(ctx context.Context, id uuid.UUID) (Property, error)
-		Update(ctx context.Context, property Property) error
 	}
 )
 
