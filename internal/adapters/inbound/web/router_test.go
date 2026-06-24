@@ -1,4 +1,4 @@
-package router
+package web_test
 
 import (
 	"encoding/json"
@@ -7,14 +7,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/florian-renfer/property-service-tracking/internal/interface/rest"
+	"github.com/florian-renfer/property-service-tracking/internal/adapters/inbound/web"
 )
 
-func TestNew_WiresHealthRoutes(t *testing.T) {
+func TestNewRouterWiresHealthRoutes(t *testing.T) {
 	t.Parallel()
 
-	handler := New(Dependencies{
-		HealthHandler: rest.NewHandler(),
+	handler := web.NewRouter(web.Dependencies{
+		HealthHandler: web.NewHealthHandler(),
 	})
 
 	paths := []string{"/api/v1/health", "/api/v1/health/"}

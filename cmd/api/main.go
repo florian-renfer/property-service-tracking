@@ -12,8 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/florian-renfer/property-service-tracking/internal/api/router"
-	"github.com/florian-renfer/property-service-tracking/internal/interface/rest"
+	"github.com/florian-renfer/property-service-tracking/internal/adapters/inbound/web"
+	"github.com/florian-renfer/property-service-tracking/internal/adapters/outbound/memory"
+	"github.com/florian-renfer/property-service-tracking/internal/app"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -29,10 +30,20 @@ func main() {
 	defer dbpool.Close()
 
 	// Router dependencies
-	healthHandler := rest.NewHandler()
+	healthHandler := web.NewHealthHandler()
+
+	propertyRepo := memory.NewPropertyRepository()
+	propertyService, err := app.NewPropertyService(propertyRepo)
+	if err != nil {
+		log.Fatal(err)
+	}
+	propertyHandler := web.NewPropertyHandler(propertyService)
 
 	// The HTTP Server
-	server := &http.Server{Addr: "0.0.0.0:8080", Handler: router.New(router.Dependencies{HealthHandler: healthHandler})}
+	server := &http.Server{Addr: "0.0.0.0:8080", Handler: web.NewRouter(web.Dependencies{
+		HealthHandler:   healthHandler,
+		PropertyHandler: propertyHandler,
+	})}
 
 	// Create context that listens for the interrupt signal
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

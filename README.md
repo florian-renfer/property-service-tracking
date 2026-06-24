@@ -109,14 +109,19 @@ Frontend
 
 Backend structure currently provides foundation only:
 
+* `internal/domain` - domain entities and invariants
+* `internal/app` - application services and use cases
 * `internal/app/ports` - application ports (interfaces) for adapters
-* `internal/api` - HTTP router composition and versioned route wiring
-* `internal/platform` - infrastructure adapters (health handler, server adapter)
+* `internal/adapters/inbound/web` - HTTP router and REST handlers
+* `internal/adapters/outbound` - infrastructure adapters
 
 Current API surface:
 
-* `GET /health`
 * `GET /api/v1/health`
+* `POST /api/v1/properties`
+* `GET /api/v1/properties`
+* `GET /api/v1/properties/{id}`
+* `PATCH /api/v1/properties/{id}`
 
 ⸻
 
@@ -212,6 +217,47 @@ And the property manager can:
    * `docker compose up -d`
 4. Start API:
    * `make run`
+
+⸻
+
+🧭 Feature Implementation Blueprint
+
+New features should follow the hexagonal architecture already used in the codebase:
+
+* Start in `internal/domain` when the feature introduces business state, invariants, or behavior.
+* Add use cases in `internal/app` and define required ports in `internal/app/ports`.
+* Implement inbound delivery mechanisms in `internal/adapters/inbound`, such as HTTP handlers.
+* Implement outbound infrastructure in `internal/adapters/outbound`, such as PostgreSQL or in-memory repositories.
+* Wire concrete adapters only at composition roots such as `cmd/api/main.go`.
+
+Implementation standards:
+
+* Keep domain code independent from HTTP, database, environment variables, framework types, and infrastructure errors.
+* Keep application services focused on orchestration, transaction boundaries, authorization decisions, and port calls.
+* Keep adapters responsible for transport, persistence, serialization, request parsing, and external system details.
+* Prefer explicit input/output DTOs at application and adapter boundaries.
+* Return named sentinel errors where callers need stable error handling with `errors.Is`.
+* Do not let clients provide audit metadata directly; derive it from the authenticated principal or temporary request context.
+* Avoid real infrastructure in application tests; use in-memory or fake port implementations.
+
+Testing blueprint:
+
+* Domain tests cover every invariant, constructor, behavior method, and mutation failure path.
+* Application tests cover success paths, validation propagation, repository errors, not-found behavior, and no-side-effect guarantees.
+* Adapter tests cover request/response contracts, JSON validation, status codes, error mapping, and persistence behavior.
+* Integration-style HTTP tests should use `httptest` and real in-memory adapters, not external services.
+* Every new feature should run with `go test ./...` and maintain high package-level coverage.
+* Aim for 100% coverage in domain, application, and simple infrastructure adapters.
+* For HTTP adapters, prioritize meaningful branch coverage over artificial tests, but keep coverage high and explain any intentionally uncovered defensive branch.
+
+Production-grade checklist:
+
+* Validate all external input at the adapter boundary and enforce business invariants in the domain.
+* Use context-aware ports for request cancellation and future timeouts.
+* Protect shared in-memory state with synchronization.
+* Keep errors safe for clients; log internal detail at the boundary when logging exists.
+* Preserve deterministic behavior in tests by controlling fakes, fixtures, and expected error paths.
+* Keep feature changes small, cohesive, and covered before wiring them into runtime composition.
 
 ⸻
 
